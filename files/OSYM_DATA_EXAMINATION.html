@@ -159,24 +159,11 @@ summary(osym_data_2017)</code></pre>
 </div>
 <div id="mef-info" class="section level2">
 <h2>MEF INFO</h2>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## Warning: package 'tidyverse' was built under R version 3.4.2</code></pre>
-<pre><code>## Loading tidyverse: ggplot2
-## Loading tidyverse: tibble
-## Loading tidyverse: tidyr
-## Loading tidyverse: readr
-## Loading tidyverse: purrr
-## Loading tidyverse: dplyr</code></pre>
-<pre><code>## Warning: package 'tibble' was built under R version 3.4.2</code></pre>
-<pre><code>## Warning: package 'tidyr' was built under R version 3.4.2</code></pre>
-<pre><code>## Warning: package 'purrr' was built under R version 3.4.2</code></pre>
-<pre><code>## Warning: package 'dplyr' was built under R version 3.4.2</code></pre>
-<pre><code>## Conflicts with tidy packages ----------------------------------------------</code></pre>
-<pre><code>## filter(): dplyr, stats
-## lag():    dplyr, stats</code></pre>
-<pre class="r"><code>mefdataset &lt;- osym_data_2017 %&gt;% filter(university_name == 'MEF ÜNİVERSİTESİ')</code></pre>
-<pre><code>## Warning: package 'bindrcpp' was built under R version 3.4.2</code></pre>
-<pre class="r"><code>summary(mefdataset)</code></pre>
+<pre class="r"><code>library(tidyverse)
+
+mefdataset &lt;- osym_data_2017 %&gt;% filter(university_name == 'MEF ÜNİVERSİTESİ')
+
+summary(mefdataset)</code></pre>
 <pre><code>##    program_id        university_name        city          
 ##  Min.   :207210013   Length:44          Length:44         
 ##  1st Qu.:207210126   Class :character   Class :character  
