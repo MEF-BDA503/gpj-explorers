@@ -9,10 +9,10 @@
 + Ahmet Tunçel
 
 ## Minimal Working Report (12.12.2017)
-+ You can find the minimal working report of our group project [Here](files/Retail_Data_Analytics.html).
++ You can find the minimal working report of our group project [here](files/Retail_Data_Analytics.html).
 
 ## Project Proposal (24.10.2017)
 + Our project proposal for Retail Data Analytics is here.
 
 ## Case Study (24.10.2017)
-+ The analysis and explanatory visualizations on the results of the University entrance examination 2017 is [Here](files/OSYM_DATA_EXAMINATION.html)
++ The analysis and explanatory visualizations on the results of the University entrance examination 2017 is [here](files/OSYM_DATA_EXAMINATION.html)
