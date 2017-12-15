@@ -1,7 +1,7 @@
 ---
 title: "Retail Data Analytics"
-author: "Bengisu Öniz, Mustafa Tilkat, Gökhan Þahin, Ahmet Tunçel"
-date: "18 Kasým 2017"
+author: "Bengisu Ã–niz, Mustafa Tilkat, GÃ¶khan Ãžahin, Ahmet TunÃ§el"
+date: "18 KasÃ½m 2017"
 output: html_document
 ---
 
@@ -14,42 +14,42 @@ knitr::opts_chunk$set(
 ```
 
 #Team Members
-*Bengisu Öniz
+*Bengisu Ã–niz
 *Mustafa Tilkat 
-*Gökhan Þahin
-*Ahmet Tunçel
+*GÃ¶khan Ãžahin
+*Ahmet TunÃ§el
 
 #Our Objective
 The main purpose of this project is to predict the department-wide sales for each store for the following year. Moreover, anaylzing the effects of markdowns on holiday and finding meaningful insights are objectives of this Project.
 
 #About the Data
 
-We have found a data set from Kaggle. The data set named [Retail Data Analytics](https://www.kaggle.com/manjeetsingh/retaildataset) which is about one of the retail company’s sales.
+We have found a data set from Kaggle. The data set named [Retail Data Analytics](https://www.kaggle.com/manjeetsingh/retaildataset) which is about one of the retail companyâ€™s sales.
 
 There are historical sales data for 45 stores located in different regions - each store contains a number of departments. The company also runs several promotional markdown events throughout the year. These markdowns precede prominent holidays, the four largest of which are the.Super Bowl, Labor Day, Thanksgiving, and Christmas. The weeks including these holidays are weighted five times higher in the evaluation than non-holiday weeks.
-Within the Excel Sheet, there are 3 Tabs – Stores, Features and Sales.
+Within the Excel Sheet, there are 3 Tabs â€“ Stores, Features and Sales.
 
 **Stores**
 Anonymized information about the 45 stores, indicating the type and size of store.
 
 **Features**
 Contains additional data related to the store, department, and regional activity for the given dates.
-*Store - the store number
-*Date - the week
-*Temperature - average temperature in the region
-*Fuel_Price - cost of fuel in the region
-*MarkDown1-5 - anonymized data related to promotional markdowns. Mark Down data is only available after Nov 2011, and is not available for all stores all the time. Any missing value is marked with an NA
-*CPI - the consumer price index
++Store - the store number
++Date - the week
++Temperature - average temperature in the region
++Fuel_Price - cost of fuel in the region
++MarkDown1-5 - anonymized data related to promotional markdowns. Mark Down data is only available after Nov 2011, and is not available for all stores all the time. Any missing value is marked with an NA
++CPI - the consumer price index
 Unemployment - the unemployment rate
-*Is Holiday -whether the week is a special holiday week
++Is Holiday -whether the week is a special holiday week
 
 **Sales**
 Historical sales data, which covers to 2010-02-05 to 2012-11-01. Within this tab there are the following fields:
-*Store - the store number
-*Dept - the department number
-*Date - the week
-*Weekly_Sales -  sales for the given department in the given store
-*IsHoliday - whether the week is a special holiday week’[1]  
++Store - the store number
++Dept - the department number
++Date - the week
++Weekly_Sales - Â sales for the given department in the given store
++IsHoliday - whether the week is a special holiday weekâ€™[1]  
 
 
 #Exploratory Analysis
@@ -67,7 +67,7 @@ library(ggplot2)
 library(plotly)
 library(corrplot)
 ```
-
+We downloaded data set from 3 csv files. 
 
 ##Data Loading
 
@@ -77,8 +77,6 @@ library(corrplot)
   stores_data_set <- read.csv2("stores data-set.csv", header = TRUE, sep = ",")
 
 ```
-
-
 
 ```{r}
   str(features_data_set)
