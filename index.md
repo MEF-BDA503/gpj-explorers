@@ -8,11 +8,11 @@
 + Gökhan Şahin
 + Ahmet Tunçel
 
-## Minimal Working Report (12.12.2017)
+## Minimal Working Report
 + You can find the minimal working report of our group project [here](files/Retail_Data_Analytics.html).
 
-## Project Proposal (24.10.2017)
-+ Our project proposal for Retail Data Analytics is here.
+## Project Proposal
++ Our project proposal for Retail Data Analytics is [here](files/Retail_Data_Analytics_Proposal.html).
 
 ## Case Study (24.10.2017)
 + The analysis and explanatory visualizations on the results of the University entrance examination 2017 is [here](files/OSYM_DATA_EXAMINATION.html)
