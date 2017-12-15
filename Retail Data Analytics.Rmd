@@ -1,0 +1,392 @@
+---
+title: "Retail Data Analytics"
+author: "Bengisu Öniz, Mustafa Tilkat, Gökhan Þahin, Ahmet Tunçel"
+date: "18 Kasým 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+#Team Members
+*Bengisu Öniz
+*Mustafa Tilkat 
+*Gökhan Þahin
+*Ahmet Tunçel
+
+#Our Objective
+The main purpose of this project is to predict the department-wide sales for each store for the following year. Moreover, anaylzing the effects of markdowns on holiday and finding meaningful insights are objectives of this Project.
+
+#About the Data
+
+We have found a data set from Kaggle. The data set named [Retail Data Analytics](https://www.kaggle.com/manjeetsingh/retaildataset) which is about one of the retail company’s sales.
+
+There are historical sales data for 45 stores located in different regions - each store contains a number of departments. The company also runs several promotional markdown events throughout the year. These markdowns precede prominent holidays, the four largest of which are the.Super Bowl, Labor Day, Thanksgiving, and Christmas. The weeks including these holidays are weighted five times higher in the evaluation than non-holiday weeks.
+Within the Excel Sheet, there are 3 Tabs – Stores, Features and Sales.
+
+**Stores**
+Anonymized information about the 45 stores, indicating the type and size of store.
+
+**Features**
+Contains additional data related to the store, department, and regional activity for the given dates.
+*Store - the store number
+*Date - the week
+*Temperature - average temperature in the region
+*Fuel_Price - cost of fuel in the region
+*MarkDown1-5 - anonymized data related to promotional markdowns. Mark Down data is only available after Nov 2011, and is not available for all stores all the time. Any missing value is marked with an NA
+*CPI - the consumer price index
+Unemployment - the unemployment rate
+*Is Holiday -whether the week is a special holiday week
+
+**Sales**
+Historical sales data, which covers to 2010-02-05 to 2012-11-01. Within this tab there are the following fields:
+*Store - the store number
+*Dept - the department number
+*Date - the week
+*Weekly_Sales -  sales for the given department in the given store
+*IsHoliday - whether the week is a special holiday week’[1]  
+
+
+#Exploratory Analysis
+
+## Loading Libraries
+
+```{r}
+library(lubridate)
+library(ggplot2)
+library(tidyverse)
+library(data.table)
+library(lubridate)
+library(stringr)
+library(ggplot2)
+library(plotly)
+library(corrplot)
+```
+
+
+##Data Loading
+
+```{r warning=FALSE}
+  features_data_set <- read.csv2("Features data set.csv", header = TRUE, sep = ",")
+  sales_data_set <- read.csv2("sales data-set.csv", header = TRUE, sep = ",")
+  stores_data_set <- read.csv2("stores data-set.csv", header = TRUE, sep = ",")
+
+```
+
+
+
+```{r}
+  str(features_data_set)
+  str(sales_data_set)
+  str(stores_data_set)
+
+```
+* Our dataset has .. columns and  rows Look at all columns
+
+
+
+### Data type converting
+
+```{r}
+
+features_data_set$Year <- substr(features_data_set$Date, 7, 10)
+features_data_set$Month <- substr(features_data_set$Date, 4, 5)
+features_data_set$Day <- substr(features_data_set$Date, 1, 2)
+
+sales_data_set$Year <- substr(sales_data_set$Date, 7, 10)
+sales_data_set$Month <- substr(sales_data_set$Date, 4, 5)
+sales_data_set$Day <- substr(sales_data_set$Date, 1, 2)
+
+sales_data_set$Weekly_Sales <- as.character(sales_data_set$Weekly_Sales)
+sales_data_set$Weekly_Sales <- as.numeric(sales_data_set$Weekly_Sales,2)
+
+```
+
+### Looking at the store numbers
+
+```{r}
+ ggplot(stores_data_set, aes(Type, fill = Type ) ) +
+  geom_bar() +
+  xlab("Type of Store") + ylab("Count of Store")
+
+```
+
+
+
+### Looking at the Sales of the Years
+```{r}
+
+YearSales <- sales_data_set %>% group_by(Year,Dept) %>% summarise(YearSales = sum(Weekly_Sales))
+
+
+
+ggplot(YearSales, aes(Year, YearSales)) +
+        geom_col()
+
+```
+
+### Analyzing the store sizes
+
+```{r}
+SalesStore <- left_join(sales_data_set, stores_data_set, by = "Store")
+
+ggplot(SalesStore, aes(Type, Size) ,log = "xy") +
+  geom_point()
+```
+
+
+###Looking at the relationship between Store Sizes & Weekly Sales
+
+```{r}
+plot(SalesStore$Size,SalesStore$Weekly_Sales, main = "Size vs Sales", xlab = "Store Size", ylab = "Weekly Sales")
+
+```
+
+
+```{r}
+
+SalesStore <- left_join(sales_data_set, stores_data_set, by = "Store")
+monthsales<-SalesStore %>% group_by(Month) %>% summarise(montlysales=sum(Weekly_Sales))
+monthsales$montlysales <- as.numeric(monthsales$montlysales)
+
+
+qplot(x =Month , y = montlysales,data = monthsales)
+
+
+```
+
+
+
+
+```{r}
+deptSalesdata <- sales_data_set %>% group_by(Dept) %>% summarise(deptSales = sum(Weekly_Sales)) %>% arrange(desc(deptSales))
+deptSalesdata$Dept<-as.factor(deptSalesdata$Dept)
+
+deptSalesdata<-data.frame(deptSalesdata)
+
+
+
+
+ggplot(deptSalesdata,aes(x=Dept,y=deptSales,fill=Dept)) +geom_bar(fill="#56B4E6", stat = "identity") + scale_x_discrete(name="Departments") + theme( axis.text.x = element_text(angle =90)) + ggtitle('Sales of the Departments')
+```
+
+
+
+```{r}
+features_data_set$Temperature<-as.numeric(as.vector(features_data_set$Temperature))
+features_data_set$Unemployment<-as.numeric(as.vector(features_data_set$Unemployment))
+features_data_set$Fuel_Price<-as.numeric(as.vector(features_data_set$Fuel_Price))
+
+sales_data_set$Weekly_Sales<-as.numeric(as.vector(sales_data_set$Weekly_Sales))
+
+features_temp_m <- features_data_set %>% group_by(Month) %>% summarise(ort_temp=mean(Temperature))
+
+
+sales_m <- sales_data_set %>%group_by(Month) %>% summarise(ort_sa=mean(Weekly_Sales))
+
+temp_sales <- inner_join(sales_m,features_temp_m,by="Month")
+
+ggplot(temp_sales, aes(x = Month, y = ort_temp, size = ort_sa)) +
+  geom_point(shape = 21,colour = "#000000", fill = "#40b8d0")
+
+
+
+features_Unem_m <- features_data_set %>% group_by(Month) %>% summarise(avg_une=mean(Unemployment))
+
+Unem_sales <- inner_join(sales_m,features_Unem_m,by="Month")
+
+
+
+
+ggplot(Unem_sales, aes(x = Month, y = avg_une, size = ort_sa)) +
+  geom_point(shape = 21,colour = "#000000", fill = "#40b8d0")
+```
+
+
+
+
+###Clustering of the stores according to the montly sales
+
+Looking at the percentages of the montly sales by the stores
+```{r}
+
+Sales<-data.table(sales_data_set)
+Features<-data.table(features_data_set)
+Stores<-data.table(stores_data_set)
+
+Sales<-Sales[,list(Store,Dept,Date,Weekly_Sales)]
+
+setkey(Sales,Store,Date)
+setkey(Features,Store,Date)
+
+Sales<-Features[Sales]
+
+setkey(Sales,Store)
+setkey(Stores,Store)
+
+Sales<-Stores[Sales]
+
+str(Sales)
+summary(Sales)
+
+Sales[,Month:=as.numeric(substring(as.character(Date),4,5))]
+
+Sales$Date<-dmy(Sales$Date)
+
+MonthlySales<-Sales[,sum(Weekly_Sales,na.rm = TRUE),.(Store,Month)]
+
+setnames(MonthlySales,"V1","Monthly_Sales")
+
+MonthlySales[,TotalSales:=sum(Monthly_Sales,na.rm = TRUE),.(Month)]
+
+MonthlySales[,SalesPercantage:=Monthly_Sales*1.0/TotalSales]
+
+Clusno<-5
+
+CM=dcast.data.table(MonthlySales,Store~Month,value.var="SalesPercantage")
+
+S<-colnames(CM)
+CM<-data.frame(CM)
+CM[is.na(CM)]=0
+colnames(CM)<-S
+CM<-data.table(CM)
+
+# basl<-which(colnames(rr)=="2")
+# bitis<-which(colnames(rr)=="269")
+set.seed(7)
+CM[,clusno:=kmeans(CM[,c(2:ncol(CM)),with=F],Clusno)$cluster]
+
+clusters<-CM[,list(Store,clusno)]
+
+setkey(clusters,Store)
+
+setkey(MonthlySales,Store)
+
+MonthlySales<-clusters[MonthlySales]
+
+SalesP<-dcast.data.table(MonthlySales,Month~Store,value.var="SalesPercantage")
+
+MonthlySales$Month <- factor(MonthlySales$Month)
+MonthlySales$Store <- factor(MonthlySales$Store)
+MonthlySales$clusno <- factor(MonthlySales$clusno)
+
+# plotting reference lines across each facet:
+
+referenceLines <- MonthlySales  # \/ Rename
+colnames(referenceLines)[2] <- "groupVar"
+zp <- ggplot(MonthlySales,
+             aes(x = Month, y = SalesPercantage))
+zp <- zp + geom_line(data = referenceLines,  # Plotting the "underlayer"
+                     aes(x = Month, y = SalesPercantage, group = groupVar),
+                     colour = "GRAY", alpha = 1/2, size = 1/2)
+zp <- zp + geom_line(size = 1)  # Drawing the "overlayer"
+zp <- zp + facet_wrap(~ Store)
+zp <- zp + theme_bw()
+ggplotly()
+
+ggplot(MonthlySales, aes(x=Month, y=SalesPercantage, color=clusno, group=Store)) +
+  geom_line()
+
+ggplotly()
+
+
+```
+  
+
+```{r}
+YearlySales<-Sales[,sum(Weekly_Sales,na.rm = TRUE),.(Store,Type,Size)]
+
+setnames(YearlySales,"V1","Yearly_Sales")
+
+ggplot(YearlySales,aes(x=Size,y=Yearly_Sales)) +
+ geom_point()+
+ geom_smooth(method=lm,color="RED",se = FALSE)+
+ scale_x_continuous(waiver()) + scale_y_continuous(waiver())
+```
+
+
+```{r}
+daysales<-Sales %>%
+ group_by(Day) %>%
+ summarise(Salesofthedays=sum(Weekly_Sales))
+
+daysales$Day<-as.factor(daysales$Day)
+
+
+ggplot(daysales,aes(x=Day,y=Salesofthedays,fill=Day)) +geom_bar(fill="#FF6666", stat = "identity") + scale_x_discrete(name="Days") + theme( axis.text.x = element_text(angle =90)) + ggtitle('Sales of the Days')
+
+```
+
+
+
+```{r}
+SalesStorepca <- left_join(sales_data_set, stores_data_set, by = "Store")
+
+alldatapca <- inner_join(SalesStorepca, features_data_set , by = c("Store", "Year", "Month", "Day")) 
+
+selectcolpca <- alldatapca %>% select( Size, CPI ,Unemployment ,Fuel_Price, Weekly_Sales, Temperature)
+
+selectcolpca$CPI <- as.numeric(as.character(selectcolpca$CPI))
+selectcolpca$Unemployment <- as.numeric(as.character(selectcolpca$Unemployment))
+selectcolpca$Fuel_Price <- as.numeric(as.character(selectcolpca$Fuel_Price))
+selectcolpca$Weekly_Sales <- as.numeric(as.character(selectcolpca$Weekly_Sales))
+selectcolpca$Temperature <- as.numeric(as.character(selectcolpca$Temperature))
+
+prout <- prcomp(selectcolpca, center = TRUE ,scale = TRUE)
+
+# Variability of each principal component
+
+prvar <- prout$sdev^2
+
+# Variance explained by each principal component
+
+pve <- prvar / sum(prvar)
+
+
+
+plot(pve, xlab = "Principal Component",
+     ylab = "Proportion of Variance Explained",
+     ylim = c(0, 1), type = "b")
+
+
+# Plot cumulative proportion of variance explained
+
+plot(cumsum(pve), xlab = "Principal Component",
+     ylab = "Cumulative Proportion of Variance Explained",
+     ylim = c(0, 1), type = "b")
+
+```
+
+
+
+
+```{r}
+alldata <- inner_join(SalesStore, features_data_set , by = c("Store", "Year", "Month", "Day")) 
+
+selectcol <- alldata %>% select( Size, CPI ,Unemployment ,Fuel_Price, Weekly_Sales, Temperature)
+
+
+selectcol$CPI <- as.numeric(as.character(selectcol$CPI))
+selectcol$Unemployment <- as.numeric(as.character(selectcol$Unemployment))
+selectcol$Fuel_Price <- as.numeric(as.character(selectcol$Fuel_Price))
+selectcol$Weekly_Sales <- as.numeric(as.character(selectcol$Weekly_Sales))
+selectcol$Temperature <- as.numeric(as.character(selectcol$Temperature))
+
+matrixdata <- as.matrix(selectcol)
+
+corrplot(cor(selectcol) ,method = "circle")
+
+```
+
+  
+  
+  
+  
+  ###References
+  #_Retail Data Analytics. (2017, August). Retrieved from https://www.kaggle.com/manjeetsingh/retaildataset_
+  
