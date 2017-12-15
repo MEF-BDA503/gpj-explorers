@@ -6,7 +6,7 @@
 + Bengisu Öniz
 + Mustafa Tilkat
 + Gökhan Şahin
-+ Ahmet Tunçe
++ Ahmet Tunçel
 
 ## Minimal Working Report (12.12.2017)
 + You can find the minimal working report of our group project [Here](files/Retail_Data_Analytics.html).
